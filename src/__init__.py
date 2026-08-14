@@ -1,2 +1,2 @@
-"""Minimal audio-text contrastive learning reference implementation."""
+"""LC-CLAP framework components for conditioned audio-text learning."""
 

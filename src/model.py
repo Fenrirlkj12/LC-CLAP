@@ -10,7 +10,7 @@ import torchaudio
 from torch import nn
 
 from .config import CLAPConfig
-from .lc_pattern import HardNegativePolicy
+from .lc_config import HardNegativePolicy
 
 
 class AudioEncoder(nn.Module):

@@ -1,17 +1,17 @@
-# Results Policy
+# Results Reporting
 
-The repository may publish reviewed final results that explain the public LC-CLAP method pattern. Results must be aggregate-only and must not disclose the underlying private configuration or detailed experiment traces.
+The repository reports approved LC-CLAP evaluation outcomes as five-seed aggregates. The current publication status is maintained in [results/RESULTS.md](../results/RESULTS.md).
 
 ## Allowed Final Record
 
-Use [results/FINAL_RESULTS_TEMPLATE.md](../results/FINAL_RESULTS_TEMPLATE.md) for an approved release report. It may include:
+An approved release report may include:
 
 - A high-level licensed dataset description.
 - The statement that five independently seeded runs were aggregated.
 - An approved aggregate metric and its dispersion.
 - A non-comparative conclusion limited to the public release scope.
 
-## Material That Stays Private
+## Non-Public Evaluation Artifacts
 
 - Per-seed values, training curves, checkpoints, and raw predictions.
 - Per-class results, confusion matrices, threshold analyses, and diagnostic plots.

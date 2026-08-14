@@ -12,7 +12,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from .data import HashTokenizer, collate_batch
-from .lc_pattern import LCMethodProfile
+from .lc_config import LCMethodProfile
 from .model import CLAPModel
 
 
@@ -79,7 +79,7 @@ def aggregate_five_seed_reports(reports: Sequence[dict[str, Any]]) -> dict[str, 
     return {
         "seed_count": len(reports),
         "aggregate": {"top1_accuracy_mean": mean, "top1_accuracy_std": math.sqrt(variance)},
-        "report_schema": "aggregate-only; do not publish seed-level inputs without review",
+        "report_schema": "five-seed aggregate",
     }
 
 

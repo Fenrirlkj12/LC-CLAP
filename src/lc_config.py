@@ -1,4 +1,4 @@
-"""Configurable LC-CLAP method pattern with intentionally illustrative rules."""
+"""Configurable LC-CLAP condition modeling and evaluation components."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ import torch
 
 @dataclass(frozen=True)
 class ConditionBucket:
-    """One ordered bucket in a scalar acoustic-condition proxy."""
+    """One ordered bucket in a scalar acoustic-condition representation."""
 
     name: str
     upper_bound: float | None
@@ -61,18 +61,18 @@ class HardNegativePolicy:
 
 @dataclass(frozen=True)
 class EvaluationProtocol:
-    """A five-run protocol using synthetic identifiers rather than project seeds."""
+    """Five-run evaluation protocol with distinct random seeds."""
 
     seed_ids: tuple[int, ...] = (101, 203, 307, 401, 509)
 
     def validate(self) -> None:
         if len(self.seed_ids) != 5 or len(set(self.seed_ids)) != 5:
-            raise ValueError("The reference protocol requires five distinct seed identifiers")
+            raise ValueError("The evaluation protocol requires five distinct seed identifiers")
 
 
 @dataclass(frozen=True)
 class LCMethodProfile:
-    """Public method contract; all bundled values are non-production examples."""
+    """LC-CLAP configuration for conditioning, hard negatives, and evaluation."""
 
     buckets: tuple[ConditionBucket, ...] = (
         ConditionBucket("low_context", 0.35),
@@ -114,7 +114,7 @@ class LCMethodProfile:
 
 
 def load_method_profile(profile_path: str | Path) -> LCMethodProfile:
-    """Load a public, illustrative method profile from a JSON document."""
+    """Load an LC-CLAP configuration from a JSON document."""
     with Path(profile_path).open(encoding="utf-8") as profile_file:
         source = json.load(profile_file)
     buckets = tuple(

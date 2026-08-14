@@ -12,14 +12,14 @@ import torchaudio
 from torch.utils.data import Dataset
 
 from .config import CLAPConfig
-from .lc_pattern import LCMethodProfile, ids_for
+from .lc_config import LCMethodProfile, ids_for
 
 
 TOKEN_PATTERN = re.compile(r"[\w']+", flags=re.UNICODE)
 
 
 class HashTokenizer:
-    """Stateless tokenizer suitable for a small reference implementation."""
+    """Stateless tokenizer for the public LC-CLAP configuration."""
 
     pad_token_id = 0
 

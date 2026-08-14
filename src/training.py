@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 
 from .config import CLAPConfig
 from .data import AudioTextDataset, HashTokenizer, collate_batch
-from .lc_pattern import LCMethodProfile
+from .lc_config import LCMethodProfile
 from .model import CLAPModel, contrastive_loss, load_checkpoint, save_checkpoint
 
 

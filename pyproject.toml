@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lc-clap-method-pattern"
+name = "lc-clap-framework"
 version = "0.1.0"
-description = "A public LC-CLAP method-pattern reference implementation"
+description = "LC-CLAP conditioned audio-text contrastive learning framework"
 requires-python = ">=3.10"
 dependencies = [
     "torch>=2.2",

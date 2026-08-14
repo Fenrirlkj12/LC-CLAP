@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the illustrative LC-CLAP-pattern train, evaluate, and aggregate flow."""
+"""Run the LC-CLAP training, evaluation, and aggregation protocol."""
 
 from __future__ import annotations
 
@@ -23,13 +23,13 @@ from src.training import train
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Run the five-seed LC-CLAP method-pattern protocol."
+        description="Run the five-seed LC-CLAP evaluation protocol."
     )
     parser.add_argument("--train-manifest", required=True)
     parser.add_argument("--evaluation-manifest", required=True)
     parser.add_argument("--labels", required=True, help="JSON array of public labels")
     parser.add_argument("--output-dir", default="outputs/five_seed_protocol")
-    parser.add_argument("--method-profile", default="profiles/lc_clap_pattern.example.json")
+    parser.add_argument("--method-profile", default="profiles/lc_clap_default.json")
     parser.add_argument("--epochs", type=int, required=True)
     parser.add_argument("--batch-size", type=int, required=True)
     parser.add_argument("--learning-rate", type=float, required=True)

@@ -1,5 +1,6 @@
 {
-  "notice": "Illustrative public method profile only; no value represents a private experiment.",
+  "profile_name": "lc_clap_default",
+  "description": "Default configuration for the public LC-CLAP framework.",
   "buckets": [
     {"name": "low_context", "upper_bound": 0.35},
     {"name": "medium_context", "upper_bound": 0.7},
