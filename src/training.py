@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 
 from .config import CLAPConfig
 from .data import AudioTextDataset, HashTokenizer, collate_batch
+from .lc_pattern import LCMethodProfile
 from .model import CLAPModel, contrastive_loss, load_checkpoint, save_checkpoint
 
 
@@ -19,11 +20,18 @@ def train(
     learning_rate: float,
     workers: int,
     device: torch.device,
+    method_profile: LCMethodProfile,
+    seed: int,
     resume_checkpoint: str | Path | None = None,
     save_every: int = 1,
 ) -> None:
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
     tokenizer = HashTokenizer(config.vocabulary_size, config.max_text_tokens)
-    dataset = AudioTextDataset(manifest_path, config, training=True)
+    dataset = AudioTextDataset(
+        manifest_path, config, training=True, method_profile=method_profile
+    )
     loader = DataLoader(
         dataset,
         batch_size=batch_size,
@@ -53,8 +61,15 @@ def train(
             waveforms = batch["waveforms"].to(device, non_blocking=True)
             tokens = batch["tokens"].to(device, non_blocking=True)
             attention_mask = batch["attention_mask"].to(device, non_blocking=True)
+            class_ids = batch["class_ids"].to(device, non_blocking=True)
+            condition_ids = batch["condition_ids"].to(device, non_blocking=True)
             optimizer.zero_grad(set_to_none=True)
-            loss = contrastive_loss(model(waveforms, tokens, attention_mask))
+            loss = contrastive_loss(
+                model(waveforms, tokens, attention_mask),
+                class_ids=class_ids,
+                condition_ids=condition_ids,
+                hard_negative_policy=method_profile.hard_negatives,
+            )
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
@@ -69,5 +84,13 @@ def train(
                 optimizer,
                 epoch,
                 global_step,
+                method_profile=method_profile.to_dict(),
             )
-    save_checkpoint(output_directory / "last.pt", model, optimizer, epochs - 1, global_step)
+    save_checkpoint(
+        output_directory / "last.pt",
+        model,
+        optimizer,
+        epochs - 1,
+        global_step,
+        method_profile=method_profile.to_dict(),
+    )

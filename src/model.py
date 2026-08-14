@@ -10,6 +10,7 @@ import torchaudio
 from torch import nn
 
 from .config import CLAPConfig
+from .lc_pattern import HardNegativePolicy
 
 
 class AudioEncoder(nn.Module):
@@ -110,10 +111,17 @@ class CLAPModel(nn.Module):
         return self.logit_scale.exp().clamp(max=100) * audio_embeddings @ text_embeddings.T
 
 
-def contrastive_loss(logits: torch.Tensor) -> torch.Tensor:
+def contrastive_loss(
+    logits: torch.Tensor,
+    class_ids: torch.Tensor | None = None,
+    condition_ids: torch.Tensor | None = None,
+    hard_negative_policy: HardNegativePolicy | None = None,
+) -> torch.Tensor:
     """Symmetric InfoNCE objective over aligned audio-text pairs in one batch."""
     if logits.ndim != 2 or logits.shape[0] != logits.shape[1]:
         raise ValueError("Contrastive logits must be a square audio-text matrix")
+    if hard_negative_policy is not None:
+        logits = hard_negative_policy.apply(logits, class_ids, condition_ids)
     targets = torch.arange(logits.shape[0], device=logits.device)
     return (functional.cross_entropy(logits, targets) + functional.cross_entropy(logits.T, targets)) / 2
 
@@ -124,6 +132,7 @@ def save_checkpoint(
     optimizer: torch.optim.Optimizer,
     epoch: int,
     global_step: int,
+    method_profile: dict[str, object] | None = None,
 ) -> None:
     Path(destination).parent.mkdir(parents=True, exist_ok=True)
     torch.save(
@@ -133,6 +142,7 @@ def save_checkpoint(
             "optimizer_state": optimizer.state_dict(),
             "epoch": epoch,
             "global_step": global_step,
+            "method_profile": method_profile,
         },
         destination,
     )

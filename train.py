@@ -6,6 +6,7 @@ import argparse
 import torch
 
 from src.config import CLAPConfig
+from src.lc_pattern import load_method_profile
 from src.training import train
 
 
@@ -20,6 +21,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     parser.add_argument("--resume", default=None)
     parser.add_argument("--save-every", type=int, default=1)
+    parser.add_argument("--method-profile", default="profiles/lc_clap_pattern.example.json")
+    parser.add_argument("--seed", type=int, default=None)
     parser.add_argument("--sample-rate", type=int, default=48_000)
     parser.add_argument("--clip-seconds", type=float, default=10.0)
     parser.add_argument("--embedding-dim", type=int, default=512)
@@ -35,6 +38,8 @@ def main() -> None:
         clip_seconds=args.clip_seconds,
         embedding_dim=args.embedding_dim,
     )
+    method_profile = load_method_profile(args.method_profile)
+    seed = args.seed if args.seed is not None else method_profile.evaluation.seed_ids[0]
     train(
         manifest_path=args.manifest,
         output_directory=args.output_dir,
@@ -44,6 +49,8 @@ def main() -> None:
         learning_rate=args.learning_rate,
         workers=args.workers,
         device=torch.device(args.device),
+        method_profile=method_profile,
+        seed=seed,
         resume_checkpoint=args.resume,
         save_every=args.save_every,
     )

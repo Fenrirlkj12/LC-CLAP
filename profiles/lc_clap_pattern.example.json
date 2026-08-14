@@ -1,0 +1,21 @@
+{
+  "notice": "Illustrative public method profile only; no value represents a private experiment.",
+  "buckets": [
+    {"name": "low_context", "upper_bound": 0.35},
+    {"name": "medium_context", "upper_bound": 0.7},
+    {"name": "high_context", "upper_bound": null}
+  ],
+  "prompts": {
+    "templates": [
+      "a recording of {label} under {condition} conditions",
+      "{label} with {condition} acoustic context"
+    ]
+  },
+  "hard_negatives": {
+    "enabled": true,
+    "scale": 1.2
+  },
+  "evaluation": {
+    "seed_ids": [101, 203, 307, 401, 509]
+  }
+}

@@ -12,6 +12,7 @@ import torchaudio
 from torch.utils.data import Dataset
 
 from .config import CLAPConfig
+from .lc_pattern import LCMethodProfile, ids_for
 
 
 TOKEN_PATTERN = re.compile(r"[\w']+", flags=re.UNICODE)
@@ -67,15 +68,22 @@ def load_waveform(audio_path: Path, config: CLAPConfig, training: bool) -> torch
 
 
 class AudioTextDataset(Dataset[dict[str, object]]):
-    """Reads JSONL records containing an audio path and its paired text."""
+    """Reads paired records with optional public LC-CLAP pattern metadata."""
 
-    def __init__(self, manifest_path: str | Path, config: CLAPConfig, training: bool) -> None:
+    def __init__(
+        self,
+        manifest_path: str | Path,
+        config: CLAPConfig,
+        training: bool,
+        method_profile: LCMethodProfile | None = None,
+    ) -> None:
         self.manifest_path = Path(manifest_path)
         self.config = config
         self.training = training
+        self.method_profile = method_profile
         self.records = self._read_records()
 
-    def _read_records(self) -> list[dict[str, str]]:
+    def _read_records(self) -> list[dict[str, object]]:
         records = []
         with self.manifest_path.open(encoding="utf-8") as manifest_file:
             for line_number, line in enumerate(manifest_file, start=1):
@@ -86,10 +94,28 @@ class AudioTextDataset(Dataset[dict[str, object]]):
                     raise ValueError(
                         f"{self.manifest_path}:{line_number} requires string audio_path and text fields"
                     )
+                label = record.get("label")
+                if label is not None and not isinstance(label, str):
+                    raise ValueError(f"{self.manifest_path}:{line_number} label must be a string")
+                leq_value = record.get("leq_value")
+                if leq_value is not None and not isinstance(leq_value, (int, float)):
+                    raise ValueError(f"{self.manifest_path}:{line_number} leq_value must be numeric")
                 audio_path = Path(record["audio_path"])
                 if not audio_path.is_absolute():
                     audio_path = self.manifest_path.parent / audio_path
-                records.append({"audio_path": str(audio_path), "text": record["text"]})
+                text, bucket = (record["text"], None)
+                if self.method_profile is not None:
+                    text, bucket = self.method_profile.build_training_text(
+                        label, None if leq_value is None else float(leq_value), record["text"]
+                    )
+                records.append(
+                    {
+                        "audio_path": str(audio_path),
+                        "text": text,
+                        "label": label,
+                        "condition_bucket": bucket,
+                    }
+                )
         if not records:
             raise ValueError(f"No records found in {self.manifest_path}")
         return records
@@ -102,16 +128,27 @@ class AudioTextDataset(Dataset[dict[str, object]]):
         return {
             "waveform": load_waveform(Path(record["audio_path"]), self.config, self.training),
             "text": record["text"],
+            "label": record["label"],
+            "condition_bucket": record["condition_bucket"],
         }
 
 
 def collate_batch(
     batch: list[dict[str, object]], tokenizer: HashTokenizer
-) -> dict[str, torch.Tensor]:
+) -> dict[str, object]:
     waveforms = torch.stack([item["waveform"] for item in batch])
     tokens, attention_mask = tokenizer.batch_encode([str(item["text"]) for item in batch])
+    labels = [item["label"] if isinstance(item["label"], str) else None for item in batch]
+    condition_buckets = [
+        item["condition_bucket"] if isinstance(item["condition_bucket"], str) else None
+        for item in batch
+    ]
     return {
         "waveforms": waveforms,
         "tokens": tokens,
         "attention_mask": attention_mask,
+        "class_ids": ids_for(labels),
+        "condition_ids": ids_for(condition_buckets),
+        "labels": labels,
+        "condition_buckets": condition_buckets,
     }
