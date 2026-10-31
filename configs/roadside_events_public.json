@@ -1,0 +1,218 @@
+{
+  "schema_version": 1,
+  "name": "roadside_events_10class",
+  "description": "Task labels, Leq buckets, canonical prompts, and experiment recipes.",
+  "sample_rate_hz": 48000,
+  "clip_seconds": 10.0,
+  "training_defaults": {
+    "epochs": 100,
+    "batch_size": 128,
+    "learning_rate": 0.00003,
+    "weight_decay": 0.05,
+    "workers": 1,
+    "save_every": 5,
+    "seed": 3408,
+    "embedding_dim": 512
+  },
+  "classes": [
+    {"id": 0, "name": "Light vehicle pass-by", "friendly_name": "a light vehicle passing by"},
+    {"id": 1, "name": "Large passenger vehicle", "friendly_name": "a large passenger vehicle"},
+    {"id": 2, "name": "Heavy truck / freight vehicle", "friendly_name": "a heavy truck or freight vehicle"},
+    {"id": 3, "name": "Powered two-/three-wheelers", "friendly_name": "a powered two-wheeler or three-wheeler"},
+    {"id": 4, "name": "Horn / warning signal", "friendly_name": "a horn or warning signal"},
+    {"id": 5, "name": "Braking / manoeuvring noise", "friendly_name": "braking or vehicle manoeuvring"},
+    {"id": 6, "name": "Alarm-like sounds", "friendly_name": "an alarm"},
+    {"id": 7, "name": "Construction / maintenance operation", "friendly_name": "construction or maintenance work"},
+    {"id": 8, "name": "Social-life interference", "friendly_name": "social activities and disturbances"},
+    {"id": 9, "name": "Natural background", "friendly_name": "natural background sounds"}
+  ],
+  "leq": {
+    "unit": "dB",
+    "soft_sigma_db": 1.5,
+    "buckets": [
+      {"name": "low", "max_inclusive": 68.0, "center_db": 66.0, "prompt_phrase": "low sound level"},
+      {"name": "moderate", "max_inclusive": 70.0, "center_db": 69.0, "prompt_phrase": "moderate sound level"},
+      {"name": "elevated", "max_inclusive": 72.0, "center_db": 71.0, "prompt_phrase": "moderately high sound level"},
+      {"name": "high", "max_inclusive": 74.0, "center_db": 73.0, "prompt_phrase": "high sound level"},
+      {"name": "very_high", "max_inclusive": null, "center_db": 76.0, "prompt_phrase": "very high sound level"}
+    ]
+  },
+  "prompts": {
+    "class_only_template": "The sound of {label}.",
+    "conditioned_template": "The sound of {label} in a {condition} acoustic context.",
+    "matrix": {
+      "Light vehicle pass-by": {
+        "low": "The sound of a light vehicle passing by in a low sound level acoustic context.",
+        "moderate": "The sound of a light vehicle passing by in a moderate sound level acoustic context.",
+        "elevated": "The sound of a light vehicle passing by in a moderately high sound level acoustic context.",
+        "high": "The sound of a light vehicle passing by in a high sound level acoustic context.",
+        "very_high": "The sound of a light vehicle passing by in a very high sound level acoustic context."
+      },
+      "Large passenger vehicle": {
+        "low": "The sound of a large passenger vehicle in a low sound level acoustic context.",
+        "moderate": "The sound of a large passenger vehicle in a moderate sound level acoustic context.",
+        "elevated": "The sound of a large passenger vehicle in a moderately high sound level acoustic context.",
+        "high": "The sound of a large passenger vehicle in a high sound level acoustic context.",
+        "very_high": "The sound of a large passenger vehicle in a very high sound level acoustic context."
+      },
+      "Heavy truck / freight vehicle": {
+        "low": "The sound of a heavy truck or freight vehicle in a low sound level acoustic context.",
+        "moderate": "The sound of a heavy truck or freight vehicle in a moderate sound level acoustic context.",
+        "elevated": "The sound of a heavy truck or freight vehicle in a moderately high sound level acoustic context.",
+        "high": "The sound of a heavy truck or freight vehicle in a high sound level acoustic context.",
+        "very_high": "The sound of a heavy truck or freight vehicle in a very high sound level acoustic context."
+      },
+      "Powered two-/three-wheelers": {
+        "low": "The sound of a powered two-wheeler or three-wheeler in a low sound level acoustic context.",
+        "moderate": "The sound of a powered two-wheeler or three-wheeler in a moderate sound level acoustic context.",
+        "elevated": "The sound of a powered two-wheeler or three-wheeler in a moderately high sound level acoustic context.",
+        "high": "The sound of a powered two-wheeler or three-wheeler in a high sound level acoustic context.",
+        "very_high": "The sound of a powered two-wheeler or three-wheeler in a very high sound level acoustic context."
+      },
+      "Horn / warning signal": {
+        "low": "The sound of a horn or warning signal in a low sound level acoustic context.",
+        "moderate": "The sound of a horn or warning signal in a moderate sound level acoustic context.",
+        "elevated": "The sound of a horn or warning signal in a moderately high sound level acoustic context.",
+        "high": "The sound of a horn or warning signal in a high sound level acoustic context.",
+        "very_high": "The sound of a horn or warning signal in a very high sound level acoustic context."
+      },
+      "Braking / manoeuvring noise": {
+        "low": "The sound of braking or vehicle manoeuvring in a low sound level acoustic context.",
+        "moderate": "The sound of braking or vehicle manoeuvring in a moderate sound level acoustic context.",
+        "elevated": "The sound of braking or vehicle manoeuvring in a moderately high sound level acoustic context.",
+        "high": "The sound of braking or vehicle manoeuvring in a high sound level acoustic context.",
+        "very_high": "The sound of braking or vehicle manoeuvring in a very high sound level acoustic context."
+      },
+      "Alarm-like sounds": {
+        "low": "The sound of an alarm in a low sound level acoustic context.",
+        "moderate": "The sound of an alarm in a moderate sound level acoustic context.",
+        "elevated": "The sound of an alarm in a moderately high sound level acoustic context.",
+        "high": "The sound of an alarm in a high sound level acoustic context.",
+        "very_high": "The sound of an alarm in a very high sound level acoustic context."
+      },
+      "Construction / maintenance operation": {
+        "low": "The sound of construction or maintenance work in a low sound level acoustic context.",
+        "moderate": "The sound of construction or maintenance work in a moderate sound level acoustic context.",
+        "elevated": "The sound of construction or maintenance work in a moderately high sound level acoustic context.",
+        "high": "The sound of construction or maintenance work in a high sound level acoustic context.",
+        "very_high": "The sound of construction or maintenance work in a very high sound level acoustic context."
+      },
+      "Social-life interference": {
+        "low": "The sound of social activities and disturbances in a low sound level acoustic context.",
+        "moderate": "The sound of social activities and disturbances in a moderate sound level acoustic context.",
+        "elevated": "The sound of social activities and disturbances in a moderately high sound level acoustic context.",
+        "high": "The sound of social activities and disturbances in a high sound level acoustic context.",
+        "very_high": "The sound of social activities and disturbances in a very high sound level acoustic context."
+      },
+      "Natural background": {
+        "low": "The sound of natural background sounds in a low sound level acoustic context.",
+        "moderate": "The sound of natural background sounds in a moderate sound level acoustic context.",
+        "elevated": "The sound of natural background sounds in a moderately high sound level acoustic context.",
+        "high": "The sound of natural background sounds in a high sound level acoustic context.",
+        "very_high": "The sound of natural background sounds in a very high sound level acoustic context."
+      }
+    }
+  },
+  "experiments": {
+    "B0": {
+      "paper_name": "B0-CNN14",
+      "mode": "audio_only",
+      "paper_backbone": "CNN14 (PANNs)",
+      "demo_backbone": "PANNs_CNN14",
+      "audio_only_backbone": "cnn14",
+      "conditioning": "none",
+      "note": "Runs the CNN14 architecture with random initialization unless an external PANNs checkpoint is supplied."
+    },
+    "B1": {
+      "paper_name": "B1-HTSAT",
+      "mode": "audio_only",
+      "paper_backbone": "HTSAT-tiny",
+      "demo_backbone": "HTSAT-tiny",
+      "audio_only_backbone": "htsat_tiny",
+      "conditioning": "none",
+      "note": "Runs the HTSAT-tiny architecture with random initialization unless an external Hugging Face checkpoint is supplied."
+    },
+    "B2": {
+      "paper_name": "B2",
+      "mode": "audio_text",
+      "paper_backbone": "HTSAT-tiny + RoBERTa",
+      "demo_backbone": "HTSAT-tiny + RoBERTa-base",
+      "audio_model_id": "laion/clap-htsat-unfused",
+      "text_model_id": "roberta-base",
+      "conditioning": "none",
+      "prompt": "class_only_template",
+      "hard_negative_weighting": false
+    },
+    "B3": {
+      "paper_name": "B3",
+      "mode": "audio_text",
+      "paper_backbone": "HTSAT-tiny + RoBERTa",
+      "demo_backbone": "HTSAT-tiny + RoBERTa-base",
+      "audio_model_id": "laion/clap-htsat-unfused",
+      "text_model_id": "roberta-base",
+      "conditioning": "hard_bucket",
+      "prompt": "conditioned_template",
+      "hard_negative_weighting": false
+    },
+    "B4": {
+      "paper_name": "B4",
+      "mode": "audio_text",
+      "paper_backbone": "HTSAT-tiny + RoBERTa",
+      "demo_backbone": "HTSAT-tiny + RoBERTa-base",
+      "audio_model_id": "laion/clap-htsat-unfused",
+      "text_model_id": "roberta-base",
+      "conditioning": "soft_bucket",
+      "prompt": "conditioned_template",
+      "soft_sigma_db": 1.5,
+      "hard_negative_weighting": false
+    },
+    "B5_shuffle_control": {
+      "mode": "protocol_only",
+      "base_experiment": "B3",
+      "shuffle_ratio": 1.0,
+      "shuffle_seed": 3408,
+      "scopes": ["within_split", "global"],
+      "note": "Permute Leq metadata while leaving audio, class labels, and split membership unchanged."
+    },
+    "B7_shuffle_control": {
+      "mode": "protocol_only",
+      "base_experiment": "B3",
+      "conditioning": "shuffled_leq_bucket",
+      "shuffle_seed": 3408,
+      "note": "Control that breaks alignment between audio content and Leq condition."
+    },
+    "E1": {
+      "mode": "protocol_only",
+      "question": "LAeq-only classification baseline",
+      "feature": "one continuous LAeq value in dB",
+      "seed": 3408,
+      "models": {
+        "multinomial_logistic": {"c_grid": [0.01, 0.1, 1.0, 10.0, 100.0], "max_iter": 5000},
+        "gini_tree": {"max_depth": [1, 2, 3, 4, 5], "min_samples_leaf": [10, 25, 50]},
+        "bucket_majority": {
+          "buckets": ["low", "moderate", "elevated", "high", "very_high"],
+          "tie_break": ["overall_training_class_frequency", "configured_class_order"]
+        }
+      },
+      "selection": "fit on training rows; select by validation Macro-F1, then accuracy; logistic ties use smaller C; tree ties use shallower depth then larger min_samples_leaf; evaluate frozen test splits once",
+      "scaling": "fit StandardScaler on training rows only for logistic regression",
+      "includes_audio": false
+    },
+    "E2": {
+      "mode": "protocol_only",
+      "question": "Does continuous LAeq add information to frozen audio embeddings?",
+      "base_experiment": "B2",
+      "seed_ids": [3408, 3409, 3410, 3414, 3415],
+      "audio_embedding_dim": 512,
+      "arms": ["audio_only_logistic", "audio_embedding_plus_numeric_leq_logistic"],
+      "c_grid": [100.0, 400.0, 1000.0, 4000.0, 10000.0],
+      "solver": "lbfgs",
+      "max_iter": 50,
+      "blas_threads": 1,
+      "selection": "fit separate audio-only and numeric-fusion heads per seed; fit scaling on training rows only; select C by validation Macro-F1, then accuracy, then smaller C; evaluate frozen test splits once",
+      "primary_contrast": "paired numeric-fusion minus audio-only metrics on the same checkpoint seed and sample windows",
+      "includes_audio": false,
+      "requires_external_frozen_checkpoints": true
+    }
+  }
+}

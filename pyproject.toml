@@ -10,6 +10,8 @@ requires-python = ">=3.10"
 dependencies = [
     "torch>=2.2",
     "torchaudio>=2.2",
+    "torchlibrosa>=0.1.0",
+    "transformers>=4.46,<5",
 ]
 
 [tool.setuptools]
