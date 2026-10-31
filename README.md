@@ -1,14 +1,14 @@
-# LC-CLAP Demo
+# LC-CLAP
 
-十类音频事件的 Leq 条件音频文本学习示例。任务定义和训练默认参数见 [configs/roadside_events_public.json](configs/roadside_events_public.json)
+An example of Leq-conditioned audio-text learning for ten audio events. Task definitions and default training parameters are available in [configs/roadside_events_public.json](configs/roadside_events_public.json).
 
-模型来源：
+Model sources:
 
-- B0：PANNs CNN14，[原始实现](https://github.com/qiuqiangkong/audioset_tagging_cnn)
-- B1-B4：HTSAT-tiny，[Hugging Face 模型](https://huggingface.co/laion/clap-htsat-unfused)
-- B2-B4 文本编码器：[RoBERTa-base](https://huggingface.co/roberta-base)
-- 模型接口：[Transformers CLAP 文档](https://huggingface.co/docs/transformers/model_doc/clap)
+- B0: PANNs CNN14, based on the [original implementation](https://github.com/qiuqiangkong/audioset_tagging_cnn)
+- B1-B4: HTSAT-tiny from [Hugging Face](https://huggingface.co/laion/clap-htsat-unfused)
+- B2-B4 text encoder: [RoBERTa-base](https://huggingface.co/roberta-base)
+- Model interface: [Transformers CLAP documentation](https://huggingface.co/docs/transformers/model_doc/clap)
 
-训练、评估和单文件推理分别由 `train.py`、`evaluate.py` 和 `retrieve.py` 启动。运行 B2-B4 时通过命令行指定 Hugging Face 模型 ID 或本地模型目录。
+Run training, evaluation, and single-file inference with `train.py`, `evaluate.py`, and `retrieve.py`, respectively. For B2-B4, specify a Hugging Face model ID or a local model directory from the command line.
 
-项目使用 MIT License。
+This project is released under the MIT License.
