@@ -1,6 +1,6 @@
-# 工作流
+# Workflow
 
-## 安装
+## Installation
 
 ```bash
 python -m venv .venv
@@ -8,17 +8,17 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 数据清单
+## Data Manifest
 
-UTF-8 JSONL，每行至少包含 `audio_path` 和 `label`。B3、B4、B5、B7 需要 `leq_value`，可选 `split` 用于 split 内 shuffle。
+Use UTF-8 JSONL with at least `audio_path` and `label` on each line. B3, B4, B5, and B7 require `leq_value`; the optional `split` field enables within-split shuffling.
 
 ```json
 {"audio_path":"audio/clip_001.wav","label":"Light vehicle pass-by","leq_value":69.4,"split":"train"}
 ```
 
-音频会转换为单声道、重采样到 48 kHz，并裁剪或补齐到 10 秒。
+Audio is converted to mono, resampled to 48 kHz, and cropped or padded to 10 seconds.
 
-## 训练
+## Training
 
 ```bash
 python train.py \
@@ -30,11 +30,11 @@ python train.py \
   --output-dir runs/B4_seed3408
 ```
 
-`B0`、`B1` 使用音频分类头；`B2` 为无 Leq 提示的音频文本对比学习；`B3` 和 `B4` 使用相同的硬 Leq 桶提示。`B4` 额外对同一 Leq 桶内不同类别的负样本加权，并在 HTSAT 输入特征上启用 SpecAugment 时频掩码；相关参数位于任务配置的 `experiments.B4`。默认 epochs、batch size、learning rate、weight decay、workers、seed 等参数位于任务配置的 `training_defaults`，也可以用命令行参数覆盖。
+B0 and B1 use audio classification heads. B2 performs audio-text contrastive learning without Leq prompts. B3 and B4 use the same hard Leq bucket prompts. B4 additionally weights negative samples from different classes within the same Leq bucket and applies SpecAugment time-frequency masking to HTSAT input features; the related parameters are defined under `experiments.B4` in the task configuration. Default epochs, batch size, learning rate, weight decay, workers, and seed values are defined under `training_defaults` and can be overridden from the command line.
 
-B0 可通过 `--pretrained-audio` 指定兼容 PANNs checkpoint；B1 可指定 Hugging Face HTSAT 模型 ID 或本地 Transformers 目录。B2-B4 需要同时指定 `--pretrained-audio` 和 `--pretrained-text`。
+B0 accepts a compatible PANNs checkpoint through `--pretrained-audio`. B1 accepts a Hugging Face HTSAT model ID or a local Transformers directory. B2-B4 require both `--pretrained-audio` and `--pretrained-text`.
 
-B5 和 B7 是 B3 的 Leq shuffle 控制：
+B5 and B7 are Leq-shuffling controls based on B3:
 
 ```bash
 python train.py --manifest data/train.jsonl \
@@ -45,7 +45,7 @@ python train.py --manifest data/train.jsonl \
   --output-dir runs/B5_seed3408
 ```
 
-## 评估
+## Evaluation
 
 ```bash
 python evaluate.py \
@@ -55,9 +55,9 @@ python evaluate.py \
   --output outputs/B4_seed3408_validation.json
 ```
 
-输出 Top-1 accuracy、Macro-F1 和逐类指标。多次运行和结果汇总可由使用者按需要编写脚本完成。
+The output includes Top-1 accuracy, Macro-F1, and per-class metrics.
 
-## 单文件推理
+## Single-File Inference
 
 ```bash
 python retrieve.py \
@@ -68,4 +68,4 @@ python retrieve.py \
   --top-k 5
 ```
 
-B3、B4 推理需要 `--leq`；B2、B0、B1 不需要。
+B3 and B4 inference require `--leq`; B2, B0, and B1 do not.

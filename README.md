@@ -2,6 +2,8 @@
 
 LC-CLAP is a Leq-conditioned audio-text learning framework for ten audio events. Task definitions and default training parameters are available in [configs/roadside_events_public.json](configs/roadside_events_public.json).
 
+Dataset access is subject to authorization and is available upon request.
+
 Model sources:
 
 - B0: PANNs CNN14, based on the [original implementation](https://github.com/qiuqiangkong/audioset_tagging_cnn)
