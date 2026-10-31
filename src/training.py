@@ -78,7 +78,7 @@ def train_task(
         backbone = str(definition.get("audio_only_backbone", "compact"))
         model = AudioOnlyModel(
             config,
-            num_classes=len(task_config.classe),
+            num_classes=len(task_config.classes),
             backbone=backbone,
             pretrained_audio=pretrained_audio if resume_checkpoint is None else None,
         ).to(device)
@@ -87,6 +87,7 @@ def train_task(
             config,
             audio_model_name=pretrained_audio,
             text_model_name=pretrained_text,
+            spec_augment=definition.get("spec_augment"),
         ).to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
     start_epoch, global_step = 0, 0
@@ -119,7 +120,7 @@ def train_task(
     }
     hard_negative = HardNegativePolicy(
         enabled=bool(definition.get("hard_negative_weighting", False)),
-        scale=float(definition.get("hard_negative_scale", 1.2)),
+        alpha=float(definition.get("hard_negative_alpha", 2.0)),
     )
 
     output_directory = Path(output_directory)

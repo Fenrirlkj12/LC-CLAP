@@ -16,7 +16,7 @@ from .config import CLAPConfig
 @dataclass(frozen=True)
 class HardNegativePolicy:
     enabled: bool = True
-    scale: float = 1.2
+    alpha: float = 2.0
 
     def apply(
         self,
@@ -28,14 +28,14 @@ class HardNegativePolicy:
             return logits
         if class_ids.shape[0] != logits.shape[0] or condition_ids.shape[0] != logits.shape[0]:
             raise ValueError("Hard-negative metadata must match the contrastive batch size")
-        if self.scale < 1.0:
-            raise ValueError("Hard-negative scale must be at least 1")
+        if self.alpha < 1.0:
+            raise ValueError("Hard-negative alpha must be at least 1")
         same_condition = condition_ids[:, None].eq(condition_ids[None, :])
         known_condition = condition_ids[:, None].ge(0) & condition_ids[None, :].ge(0)
         different_class = class_ids[:, None].ne(class_ids[None, :])
         diagonal = torch.eye(logits.shape[0], dtype=torch.bool, device=logits.device)
         mask = same_condition & known_condition & different_class & ~diagonal
-        return torch.where(mask, logits + math.log(self.scale), logits)
+        return torch.where(mask, logits * self.alpha, logits)
 
 
 class AudioEncoder(nn.Module):
@@ -148,6 +148,7 @@ class HTSATRobertaModel(nn.Module):
         config: CLAPConfig,
         audio_model_name: str = "laion/clap-htsat-unfused",
         text_model_name: str = "roberta-base",
+        spec_augment: dict[str, int] | None = None,
     ) -> None:
         super().__init__()
         try:
@@ -158,8 +159,12 @@ class HTSATRobertaModel(nn.Module):
         self.config = config
         self.audio_model_name = audio_model_name
         self.text_model_name = text_model_name
+        self.spec_augment = spec_augment
         self.audio_encoder = build_audio_backbone(
-            "htsat_tiny", config, pretrained_audio=audio_model_name
+            "htsat_tiny",
+            config,
+            pretrained_audio=audio_model_name,
+            spec_augment=spec_augment,
         )
         self.text_encoder = AutoModel.from_pretrained(text_model_name)
         text_dim = int(self.text_encoder.config.hidden_size)
@@ -259,6 +264,7 @@ def save_checkpoint(
     if isinstance(model, HTSATRobertaModel):
         payload["audio_model_name"] = model.audio_model_name
         payload["text_model_name"] = model.text_model_name
+        payload["spec_augment"] = model.spec_augment
     torch.save(payload, destination)
 
 
@@ -295,6 +301,7 @@ def load_model(
             config,
             audio_model_name=str(payload.get("audio_model_name", "laion/clap-htsat-unfused")),
             text_model_name=str(payload.get("text_model_name", "roberta-base")),
+            spec_augment=payload.get("spec_augment"),
         ).to(device)
     else:
         model = CLAPModel(config).to(device)

@@ -175,7 +175,7 @@ def _validate_task_config(config: TaskConfig) -> None:
         row = config.prompt_matrix[item.name]
         if set(row) != set(bucket_names):
             raise ValueError(f"Prompt matrix row for {item.name!r} must contain every Leq bucket")
-        for bucket in config.bucket:
+        for bucket in config.buckets:
             expected = config.conditioned_template.format(
                 label=item.friendly_name,
                 condition=bucket.prompt_phrase,

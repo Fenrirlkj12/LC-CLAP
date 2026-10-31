@@ -1,6 +1,6 @@
 # LC-CLAP
 
-An example of Leq-conditioned audio-text learning for ten audio events. Task definitions and default training parameters are available in [configs/roadside_events_public.json](configs/roadside_events_public.json).
+LC-CLAP is a Leq-conditioned audio-text learning framework for ten audio events. Task definitions and default training parameters are available in [configs/roadside_events_public.json](configs/roadside_events_public.json).
 
 Model sources:
 

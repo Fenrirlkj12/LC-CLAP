@@ -30,7 +30,7 @@ python train.py \
   --output-dir runs/B4_seed3408
 ```
 
-`B0`、`B1` 使用音频分类头；`B2` 为无 Leq 提示的音频文本对比学习；`B3` 使用硬 Leq 桶提示；`B4` 使用五档 Leq 的 Gaussian 软权重。默认 epochs、batch size、learning rate、weight decay、workers、seed 等参数位于任务配置的 `training_defaults`，也可以用命令行参数覆盖。
+`B0`、`B1` 使用音频分类头；`B2` 为无 Leq 提示的音频文本对比学习；`B3` 和 `B4` 使用相同的硬 Leq 桶提示。`B4` 额外对同一 Leq 桶内不同类别的负样本加权，并在 HTSAT 输入特征上启用 SpecAugment 时频掩码；相关参数位于任务配置的 `experiments.B4`。默认 epochs、batch size、learning rate、weight decay、workers、seed 等参数位于任务配置的 `training_defaults`，也可以用命令行参数覆盖。
 
 B0 可通过 `--pretrained-audio` 指定兼容 PANNs checkpoint；B1 可指定 Hugging Face HTSAT 模型 ID 或本地 Transformers 目录。B2-B4 需要同时指定 `--pretrained-audio` 和 `--pretrained-text`。
 

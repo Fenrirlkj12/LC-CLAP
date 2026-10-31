@@ -161,10 +161,16 @@
       "demo_backbone": "HTSAT-tiny + RoBERTa-base",
       "audio_model_id": "laion/clap-htsat-unfused",
       "text_model_id": "roberta-base",
-      "conditioning": "soft_bucket",
+      "conditioning": "hard_bucket",
       "prompt": "conditioned_template",
-      "soft_sigma_db": 1.5,
-      "hard_negative_weighting": false
+      "hard_negative_weighting": true,
+      "hard_negative_alpha": 2.0,
+      "spec_augment": {
+        "time_drop_width": 64,
+        "time_stripes_num": 2,
+        "freq_drop_width": 8,
+        "freq_stripes_num": 2
+      }
     },
     "B5_shuffle_control": {
       "mode": "protocol_only",

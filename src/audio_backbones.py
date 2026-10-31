@@ -132,7 +132,12 @@ class HtsatTinyBackbone(nn.Module):
 
     output_dim = 768
 
-    def __init__(self, config: CLAPConfig, pretrained_audio: str | None = None) -> None:
+    def __init__(
+        self,
+        config: CLAPConfig,
+        pretrained_audio: str | None = None,
+        spec_augment: dict[str, int] | None = None,
+    ) -> None:
         super().__init__()
         try:
             from transformers import ClapAudioConfig, ClapAudioModel, ClapFeatureExtractor
@@ -140,6 +145,9 @@ class HtsatTinyBackbone(nn.Module):
             raise RuntimeError("HTSAT-tiny requires the transformers package") from error
 
         self.sample_rate = config.sample_rate
+        self.spec_augmenter = (
+            SpecAugmentation(**spec_augment) if spec_augment is not None else None
+        )
         if pretrained_audio:
             self.encoder = ClapAudioModel.from_pretrained(pretrained_audio)
             self.feature_extractor = ClapFeatureExtractor.from_pretrained(pretrained_audio)
@@ -179,7 +187,10 @@ class HtsatTinyBackbone(nn.Module):
             sampling_rate=self.sample_rate,
             return_tensors="pt",
         )
-        encoded = self.encoder(input_features=features.input_features.to(waveforms.device))
+        input_features = features.input_features.to(waveforms.device)
+        if self.training and self.spec_augmenter is not None:
+            input_features = self.spec_augmenter(input_features.transpose(-1, -2)).transpose(-1, -2)
+        encoded = self.encoder(input_features=input_features)
         return encoded.pooler_output
 
 
@@ -187,6 +198,7 @@ def build_audio_backbone(
     backbone: str,
     config: CLAPConfig,
     pretrained_audio: str | None = None,
+    spec_augment: dict[str, int] | None = None,
 ) -> nn.Module:
     if backbone == "cnn14":
         model = Cnn14Backbone(config)
@@ -194,5 +206,7 @@ def build_audio_backbone(
             model.load_panns_checkpoint(pretrained_audio)
         return model
     if backbone == "htsat_tiny":
-        return HtsatTinyBackbone(config, pretrained_audio=pretrained_audio)
+        return HtsatTinyBackbone(
+            config, pretrained_audio=pretrained_audio, spec_augment=spec_augment
+        )
     raise ValueError(f"Unsupported audio-only backbone: {backbone}")
